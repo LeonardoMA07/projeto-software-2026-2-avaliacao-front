@@ -6,7 +6,7 @@ import LogoutButton from "./LogoutButton";
 // Em dev o Vite faz proxy de /api para o back; na Vercel quem faz é o vercel.json
 const API_URL = "/api";
 const ROLES_CLAIM = "https://social-insper.com/roles";
-const FORM_VAZIO = { emailAvaliado: "", nota: "", comentarios: "" };
+const FORM_VAZIO = { emailResponsavel: "", prioridade: "", titulo: "", description: "" };
 
 function lerPapeis(token) {
   const payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
@@ -24,7 +24,7 @@ export default function App() {
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const [token, setToken] = useState("");
   const [papeis, setPapeis] = useState([]);
-  const [avaliacoes, setAvaliacoes] = useState([]);
+  const [Tarefas, setTarefas] = useState([]);
   const [form, setForm] = useState(FORM_VAZIO);
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
@@ -42,15 +42,15 @@ export default function App() {
       .catch((e) => setErro("Erro ao obter o token: " + e.message));
   }, [isAuthenticated, getAccessTokenSilently]);
 
-  const carregarAvaliacoes = useCallback(async () => {
+  const carregarTarefas = useCallback(async () => {
     setCarregando(true);
     setErro("");
     try {
-      const resposta = await fetch(`${API_URL}/avaliacoes`, {
+      const resposta = await fetch(`${API_URL}/Tarefas`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!resposta.ok) throw new Error(mensagemDeErro(resposta.status, "listar avaliações"));
-      setAvaliacoes(await resposta.json());
+      setTarefas(await resposta.json());
     } catch (e) {
       setErro(e.message);
     } finally {
@@ -59,8 +59,8 @@ export default function App() {
   }, [token]);
 
   useEffect(() => {
-    if (token) carregarAvaliacoes();
-  }, [token, carregarAvaliacoes]);
+    if (token) carregarTarefas();
+  }, [token, carregarTarefas]);
 
   const alterarCampo = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -69,7 +69,7 @@ export default function App() {
     setEnviando(true);
     setErro("");
     try {
-      const resposta = await fetch(`${API_URL}/avaliacoes`, {
+      const resposta = await fetch(`${API_URL}/tarefas`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +84,7 @@ export default function App() {
       });
       if (!resposta.ok) throw new Error(mensagemDeErro(resposta.status, "cadastrar avaliação"));
       const nova = await resposta.json();
-      setAvaliacoes([nova, ...avaliacoes]);
+      setTarefas([nova, ...Tarefas]);
       setForm(FORM_VAZIO);
     } catch (e) {
       setErro(e.message);
@@ -98,8 +98,8 @@ export default function App() {
   if (!isAuthenticated) {
     return (
       <main className="centro">
-        <h1>Sistema de Avaliações</h1>
-        <p>Entre com sua conta para ver e cadastrar avaliações.</p>
+        <h1>Sistema de Tarefas</h1>
+        <p>Entre com sua conta para ver e cadastrar tarefas.</p>
         <LoginButton />
       </main>
     );
@@ -121,7 +121,7 @@ export default function App() {
 
       {isAdmin && (
         <section className="cartao">
-          <h2>Nova avaliação</h2>
+          <h2>Nova Tarefa</h2>
           <form onSubmit={cadastrar} className="formulario">
             <label>
               Avaliador
@@ -170,13 +170,13 @@ export default function App() {
       <section className="cartao">
         <div className="titulo-lista">
           <h2>Avaliações cadastradas</h2>
-          <button onClick={carregarAvaliacoes} disabled={carregando || !token}>
+          <button onClick={carregarTarefas} disabled={carregando || !token}>
             Atualizar
           </button>
         </div>
         {carregando ? (
           <p className="sutil">Carregando avaliações...</p>
-        ) : avaliacoes.length === 0 ? (
+        ) : Tarefas.length === 0 ? (
           <p className="sutil">Nenhuma avaliação cadastrada ainda.</p>
         ) : (
           <div className="tabela">
@@ -191,7 +191,7 @@ export default function App() {
                 </tr>
               </thead>
               <tbody>
-                {avaliacoes.map((a) => (
+                {Tarefas.map((a) => (
                   <tr key={a.id}>
                     <td>{new Date(a.dataAvaliacao).toLocaleString("pt-BR")}</td>
                     <td>{a.emailAvaliador}</td>

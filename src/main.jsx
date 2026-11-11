@@ -4,8 +4,8 @@ import App from './App.jsx'
 import { Auth0Provider } from '@auth0/auth0-react'
 
 // Configuração do Auth0 (Applications > sua SPA e APIs > sua API)
-const AUTH0_DOMAIN = "SEU-TENANT.us.auth0.com"
-const AUTH0_CLIENT_ID = "SEU-CLIENT-ID"
+const AUTH0_DOMAIN = "dev-cqcjca7w4bkovvlv.us.auth0.com"
+const AUTH0_CLIENT_ID = "kywgKJXDoIe6lGdh39lsD1WOzfw6Dkqg"
 const AUTH0_AUDIENCE = "https://avaliacoes-api"
 
 createRoot(document.getElementById('root')).render(

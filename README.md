@@ -19,6 +19,4 @@ A configuração do Auth0 (domínio, client ID e audience) está em `src/main.js
 
 ## Deploy na Vercel
 
-```
-npx vercel deploy --prod
-```
+O projeto da Vercel está conectado a este repositório: cada push na `main` publica automaticamente em produção.
